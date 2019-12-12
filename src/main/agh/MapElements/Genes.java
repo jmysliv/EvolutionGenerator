@@ -85,4 +85,6 @@ public class Genes {
     public int[] getGenesTable() {
         return genesTable;
     }
+
+    public int[] getGeneQuantity(){return geneQuantity;}
 }

@@ -72,6 +72,7 @@ public class Animal{
     public Genes getAnimalGene() {
         return animalGene;
     }
+
     public int getStartEnergy(){
         return this.startEnergy;
     }

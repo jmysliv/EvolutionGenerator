@@ -79,6 +79,18 @@ public class Map implements IWorldMap {
        return grasses.size();
     }
 
+    public int[] genePrportion(){
+        int[] geneQuantity = new int[8];
+        for(int i=0; i<8; i++) geneQuantity[i] = 0;
+        List<Animal> animalsToGenesCount = animals.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList());
+        animalsToGenesCount.forEach(element->{
+            for(int i=0; i<8; i++){
+                geneQuantity[i] += element.getAnimalGene().getGeneQuantity()[i];
+            }
+        });
+        return geneQuantity;
+    }
+
     public void positionChanged(Vector2d oldPosition, Animal animal){
         animals.get(oldPosition).remove(animal);
         if(animals.get(oldPosition).isEmpty()) animals.remove(oldPosition);
