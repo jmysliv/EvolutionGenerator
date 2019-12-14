@@ -25,30 +25,49 @@ import java.text.SimpleDateFormat;
 
 
 public class Visualization extends Application {
-    private FlowPane root = new FlowPane();
-    private Pane mapChart = new Pane();
+
     private final int WINDOW_SIZE = 80;
     private long animationTimeStep = 1_000_000;
     private long chartTimeStep = 400_000_000;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ss:SSSSS");
-    private ObservableList<PieChart.Data> pieChartData =
-            FXCollections.observableArrayList(
-                    new PieChart.Data("0", 0),
-                    new PieChart.Data("1"  , 0),
-                    new PieChart.Data("2" , 0),
-                    new PieChart.Data("3" , 0),
-                    new PieChart.Data("4" , 0),
-                    new PieChart.Data("5" , 0),
-                    new PieChart.Data("6" , 0),
-                    new PieChart.Data("7" , 0));
+    private boolean twoMaps = true  ;
     private boolean stopSimulation = false;
 
     @Override
     public void start(Stage stage) {
 
        Simulator simulator = new Simulator();
+       stage.setTitle("map 1");
+       animation(simulator, stage);
+       Stage stage2 = new Stage();
+       if(twoMaps){
+           Simulator simulator2 = new Simulator();
 
+           stage2.setTitle("map 2");
+           animation(simulator2, stage2);
+       }
 
+       stage.setOnCloseRequest(e -> {
+            stage.close();
+            stage2.close();
+            simulator.showAnimalStats();
+        });
+    }
+
+    private void animation(Simulator simulator, Stage stage){
+        //setUp
+        FlowPane root = new FlowPane();
+        Pane mapChart = new Pane();
+        ObservableList<PieChart.Data> pieChartData =
+                FXCollections.observableArrayList(
+                        new PieChart.Data("0", 0),
+                        new PieChart.Data("1"  , 0),
+                        new PieChart.Data("2" , 0),
+                        new PieChart.Data("3" , 0),
+                        new PieChart.Data("4" , 0),
+                        new PieChart.Data("5" , 0),
+                        new PieChart.Data("6" , 0),
+                        new PieChart.Data("7" , 0));
         //Pie chart
         final PieChart geneQuantity = new PieChart(pieChartData);
 
@@ -60,6 +79,8 @@ public class Visualization extends Application {
         vb.getChildren().add(button);
         button.setOnAction(value ->  {
             this.stopSimulation = !this.stopSimulation;
+            if(button.getText() == "Stop Simulation") button.setText("Start Simulation");
+            else button.setText("Stop Simulation");
         });
         //line charts - energy, age, childs
         final LineChart<String, Number> Energy = this.setUp("time", "Energy");
@@ -80,6 +101,7 @@ public class Visualization extends Application {
 
         //line chart - grass and animals
         final LineChart<String, Number> lineChart = this.setUp("time", "number of elements");
+        lineChart.setMaxWidth(400);
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         XYChart.Series<String, Number> series2 = new XYChart.Series<>();
         series.setName("Animal number");
@@ -98,7 +120,7 @@ public class Visualization extends Application {
             public void handle(long now) {
                 if(!stopSimulation){
                     if (now - lastUpdate >= animationTimeStep) {
-                        update(simulator);
+                        update(simulator, mapChart);
                         lastUpdate = now ;
                     }
                     if(now-lastUpdate2 >= chartTimeStep){
@@ -119,25 +141,18 @@ public class Visualization extends Application {
                             series4.getData().remove(0);
                         if (series5.getData().size() > WINDOW_SIZE)
                             series5.getData().remove(0);
-                        updatePieChart(simulator);
+                        updatePieChart(simulator, pieChartData);
                     }
                 }
             }
         };
 
         timer.start();
-
         //Adding scenes to the stages
         stage.setScene(scene2);
-        stage.setTitle("map 1");
-
 
         //Displaying the contents of the stages
         stage.show();
-        stage.setOnCloseRequest(e -> {
-            stage.close();
-            simulator.showAnimalStats();
-        });
 
     }
 
@@ -150,15 +165,15 @@ public class Visualization extends Application {
 
     }
 
-    private void update( Simulator simulator) {
+    private void update( Simulator simulator, Pane mapChart) {
         mapChart.getChildren().removeIf(n -> {
             return true;
         });
         simulator.cycle();
-        draw(simulator.getMap());
+        draw(simulator.getMap(), mapChart);
     }
 
-   public void draw(Map map){
+   public void draw(Map map, Pane mapChart){
 
        for(int i=0; i<=map.getSize().x; i++){
            for(int j=0; j<=map.getSize().y; j++){
@@ -190,7 +205,7 @@ public class Visualization extends Application {
        }
    }
 
-   public void updatePieChart( Simulator simulator){
+   public void updatePieChart( Simulator simulator, ObservableList<PieChart.Data> pieChartData){
         int[] genes = simulator.getMap().genePrportion();
         for(int i=0; i<8; i++){
             for(PieChart.Data d : pieChartData)
