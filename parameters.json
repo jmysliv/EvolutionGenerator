@@ -5,6 +5,6 @@
   "moveEnergy": 2,
   "plantEnergy": 40,
   "jungleRatio": 0.1,
-  "numberOfAnimals": 1000,
-  "numberOfGrassInJungle": 200
+  "numberOfAnimals": 500,
+  "numberOfGrassInJungle": 100
 }

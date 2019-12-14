@@ -13,6 +13,7 @@ public class Map implements IWorldMap {
     private int moveCost;
     private HashMap<Vector2d, List<Animal>>  animals= new HashMap<>();
     private HashMap<Vector2d, Grass>  grasses= new HashMap<>();
+    private List<Animal> history = new ArrayList<>();
 
     public Map(int width, int height, int moveCost){
         this.moveCost = moveCost;
@@ -108,12 +109,14 @@ public class Map implements IWorldMap {
         });
     }
 
-    public void removeDeadAnimal(){
+    public void removeDeadAnimal(int day){
         List<Animal> animalsToDie = animals.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList());
         animalsToDie.forEach(element->{
             if(element.getEnergy()<=0 && animals.containsKey(element.getPosition())){
                 this.animals.get(element.getPosition()).remove(element);
                 if(this.animals.get(element.getPosition()).isEmpty()) this.animals.remove(element.getPosition());
+                element.setDeathTime(day);
+                history.add(element);
             }
         });
     }
@@ -132,5 +135,39 @@ public class Map implements IWorldMap {
         newBornAnimals.forEach(element ->{
             place(element);
         });
+    }
+
+    public double averageEnergy(){
+        List<Animal> animalsTocountEnergy = animals.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList());
+        int sum = 0;
+        for(Animal animal : animalsTocountEnergy){
+            sum += animal.getEnergy();
+        }
+        return (double) sum/animalsTocountEnergy.size();
+    }
+    public double averageAge(){
+        List<Animal> animalsTocountEnergy = animals.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList());
+        int sum = 0;
+        for(Animal animal : animalsTocountEnergy){
+            sum += animal.getAge();
+        }
+        return (double) sum/animalsTocountEnergy.size();
+    }
+    public double averageChildsNumber(){
+        List<Animal> animalsToCountEnergy = animals.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList());
+        int sum = 0;
+        for(Animal animal : animalsToCountEnergy){
+            sum += animal.getChilds();
+        }
+        return (double) sum/animalsToCountEnergy.size();
+    }
+
+    public List<Animal> getHistory(int day) {
+        List<Animal> animalsTHistory = animals.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList());
+        animalsTHistory.forEach(element ->{
+            element.setDeathTime(day);
+        });
+        history.addAll(animalsTHistory);
+        return history;
     }
 }

@@ -87,4 +87,12 @@ public class Genes {
     }
 
     public int[] getGeneQuantity(){return geneQuantity;}
+
+    public int getDominantGene(){
+        int max = 0;
+        for(int i=1; i<8; i++){
+            if(geneQuantity[i] > geneQuantity[max]) max = i;
+        }
+        return max;
+    }
 }

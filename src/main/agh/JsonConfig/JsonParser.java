@@ -1,10 +1,12 @@
 package agh.JsonConfig;
 
+import agh.World.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -31,6 +33,34 @@ public class JsonParser {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void writeToJson(Map map){
+        JSONObject mapStats = new JSONObject();
+        mapStats.put("number of Animals: ", map.numberOfAnimals());
+        mapStats.put("number of Grasses: ", map.numberOfGrasses());
+        mapStats.put("Liczba genu 0: ", map.genePrportion()[0]);
+        mapStats.put("Liczba genu 1: ", map.genePrportion()[1]);
+        mapStats.put("Liczba genu 2: ", map.genePrportion()[2]);
+        mapStats.put("Liczba genu 3: ", map.genePrportion()[3]);
+        mapStats.put("Liczba genu 4: ", map.genePrportion()[4]);
+        mapStats.put("Liczba genu 5: ", map.genePrportion()[5]);
+        mapStats.put("Liczba genu 6: ", map.genePrportion()[6]);
+        mapStats.put("Liczba genu 7: ", map.genePrportion()[7]);
+        mapStats.put("średni poziom energi: ", map.averageEnergy());
+        mapStats.put("średnia liczba dzieci: ", map.averageChildsNumber());
+        mapStats.put("średni wiek: ", map.averageAge());
+
+
+        //Write JSON file
+        try (FileWriter file = new FileWriter("stats.json")) {
+
+            file.write(mapStats.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
