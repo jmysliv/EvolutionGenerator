@@ -30,7 +30,7 @@ public class Visualization extends Application {
     private long animationTimeStep = 1_000_000;
     private long chartTimeStep = 400_000_000;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ss:SSSSS");
-    private boolean twoMaps = true  ;
+    private boolean twoMaps = true;
     private boolean stopSimulation = false;
 
     @Override
