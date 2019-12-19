@@ -30,7 +30,7 @@ public class Visualization extends Application {
     private long animationTimeStep = 1_000_000;
     private long chartTimeStep = 400_000_000;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ss:SSSSS");
-    private boolean twoMaps = true;
+    private boolean twoMaps = false;
     private boolean stopSimulation = false;
 
     @Override
@@ -174,13 +174,13 @@ public class Visualization extends Application {
     }
 
    public void draw(Map map, Pane mapChart){
-
+        int rectangleSize = calculateRectangleSize(map);
        for(int i=0; i<=map.getSize().x; i++){
            for(int j=0; j<=map.getSize().y; j++){
                Vector2d tmp = new Vector2d(i, j);
                if(map.isOccupied(tmp)){
                    if(map.objectAt(tmp) instanceof Animal){
-                       Rectangle rectangle = new Rectangle(5, 5);
+                       Rectangle rectangle = new Rectangle(rectangleSize, rectangleSize);
                        if(((Animal) map.objectAt(tmp)).getEnergy() > ((Animal) map.objectAt(tmp)).getStartEnergy()) {
                            rectangle.setFill(Color.INDIGO);
                        } else  if(((Animal) map.objectAt(tmp)).getEnergy() > ((Animal) map.objectAt(tmp)).getStartEnergy() / 2) {
@@ -190,14 +190,14 @@ public class Visualization extends Application {
                        } else {
                            rectangle.setFill(Color.RED);
                        }
-                       rectangle.setX(5*i);
-                       rectangle.setY(5*j);
+                       rectangle.setX(rectangleSize*i);
+                       rectangle.setY(rectangleSize*j);
                        mapChart.getChildren().add(rectangle);
                    }
                    else if(map.objectAt(tmp) instanceof Grass){
-                       Rectangle rectangle = new Rectangle(5, 5, Color.GREEN);
-                       rectangle.setX(5*i);
-                       rectangle.setY(5*j);
+                       Rectangle rectangle = new Rectangle(rectangleSize, rectangleSize, Color.GREEN);
+                       rectangle.setX(rectangleSize*i);
+                       rectangle.setY(rectangleSize*j);
                        mapChart.getChildren().add(rectangle);
                    }
                }
@@ -217,6 +217,18 @@ public class Visualization extends Application {
             }
         }
 
+   }
+
+   public int calculateRectangleSize(Map map){
+        int max = Integer.max(map.getSize().x, map.getSize().y);
+        if(max > 160) return 1;
+        if(max > 140) return 2;
+        if(max > 120) return 3;
+        if(max > 100) return 4;
+        if(max > 80) return 5;
+        if(max > 60) return 7;
+        if(max > 40) return 10;
+        return 20;
    }
 
 
